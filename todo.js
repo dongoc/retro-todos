@@ -43,7 +43,7 @@ function createdList(data) {
 
   const editBtn = document.createElement('button');
   editBtn.classList.add("listBtn", "editBtn");
-  editBtn.addEventListener('click', editList);
+  //editBtn.addEventListener('click', editList);
 
   const deleteBtn = document.createElement('button');
   deleteBtn.classList.add('listBtn', 'deleteBtn');
@@ -70,7 +70,7 @@ function printAllLists(data) {
 }
 
 // 로드시 실행
-printAllLists(data);
+//printAllLists(data);
 
 //---------------------------------------Delete---------------------------------------
 
@@ -192,15 +192,23 @@ function editList(event) {
 
 // 체크버튼 누르면 색깔도 바꾸기
 function changeBtnColor(event) {
+  const target = event.target.parentElement
+  console.dir(target.id)
   if (event.target.classList.contains('not_started')) {
+    listArray[target.id].progress = 'in_progress';
+    localStorage.setItem('todo', listArray);
     event.target.classList.remove('not_started');
     event.target.classList.add('in_progress');
   }
   else if (event.target.classList.contains('in_progress')) {
+    listArray[target.id].progress = 'completed';
+    localStorage.setItem('todo', listArray);
     event.target.classList.remove('in_progress');
     event.target.classList.add('completed');
   }
   else if (event.target.classList.contains('completed')) {
+    listArray[target.id].progress = 'not_started';
+    localStorage.setItem('todo', listArray);
     event.target.classList.remove('completed');
     event.target.classList.add('not_started');
   }
@@ -210,11 +218,12 @@ function changeBtnColor(event) {
 
 // 필터(속성별)
 
+
 // 필터(데이트)
 
 //-----------------------------------------------CSS----------------------------
 
 // opacitiy
-function opacitiyDown(el) {
+function opacitiyDown(event) {
   
 }
