@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Retro Todo</title>
+  <link rel="shortcut icon" href="https://img.icons8.com/ios-glyphs/30/000000/note.png" type="image/x-icon">
+  <link rel="stylesheet" href="todo.css">
+</head>
+<body>
+  <div class="container">
+    <!--header-->
+    <header>
+      <div class="title_container">
+        <div class="botton_container">
+          <button class="filterbtn not_started"></button>
+          <button class="filterbtn in_progress"></button>
+          <button class="filterbtn completed"></button>
+        </div>
+        <h1>TO DO LISTS</h1>
+      </div>
+      <div class="input_container">
+        <input id="todoInput" type="text" placeholder="Add your todos...">
+      </div>
+    </header>
+    <!--END header-->
+    <!--list-->
+    <div class="list_container">
+      <ul>
+      </ul>
+    </div>
+    <!--END list-->
+    <!--else button-->
+    <button id="filterByDate">
+      <img id="filter_img" src="https://img.icons8.com/ios-glyphs/25/000000/filter.png" alt="sort by date"/>
+      <p>DATE</p>
+    </button>
+    <!--END else button-->
+  </div>
+  <script src="todo.js"></script>
+</body>
+</html>
