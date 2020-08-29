@@ -37,9 +37,7 @@ header {
   position: relative;
 }
 
-.botton_container {
-  
-}
+
 
 .filterbtn {
   width: 30px;
@@ -58,21 +56,21 @@ header {
 
 .not_started {
   background-color: /*rgba(255,113,113, 0.5)*/
-  #FF7171 !important;
+  #FF7171;
 }
 
 .in_progress {
   background-color: /*rgba(255,219,135, 0.5)*/
-  #FFDB87 !important;
+  #FFDB87;
 }
 
 .completed {
   background-color: /*rgba(140,221,158, 0.5)*/
-  #8CDD9E !important;
+  #8CDD9E;
 }
 
 h1 {
-  font-family: Roboto;
+  font-family: 'Roboto';
   font-style: normal;
   font-weight: bold;
   font-size: 20px;
@@ -161,6 +159,7 @@ li {
   font-size: 20px;
   letter-spacing: 1.5px;
   overflow: hidden;
+  padding: 3px 0px;
 }
 
 .createdDate {
@@ -250,4 +249,14 @@ hr {
   margin: 0px 5px;
   letter-spacing: 1.5px;
   font-weight: bold;
+}
+
+
+#category_img {
+  position: absolute;
+  width: 100px;
+  height: 85px;
+  top: 0px;
+  left: -130px;
+  cursor: pointer;
 }
