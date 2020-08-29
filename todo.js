@@ -2,15 +2,25 @@ const ul = document.querySelector('ul');
 const todoInput = document.querySelector('#todoInput');
 const filterNotStarted = document.querySelector('.not_started');
 const filterInProgress = document.querySelector('.in_progress');
-const filterCompleted = document.querySelector('completed');
+const filterCompleted = document.querySelector('.completed');
 const allLists = document.querySelectorAll('li');
 
-const listArray = localStorage.getItem('todo')
-  ? JSON.parse(localStorage.getItem('todo'))
-  : [];
-
+let listArray = []
+if (localStorage.getItem('todo')) {
+  listArray = JSON.parse(localStorage.getItem('todo'))
+}
 localStorage.setItem('todo', JSON.stringify(listArray));
-const data =  JSON.parse(localStorage.getItem('todo'))
+const data = JSON.parse(localStorage.getItem('todo'))
+
+let filterState = {
+  notStarted: 'on',
+  inProgress: 'on',
+  completed: 'on'
+}
+if (localStorage.getItem('filterState')) {
+  filterState = JSON.parse(localStorage.getItem('filterState'));
+}
+localStorage.setItem('filterState', JSON.stringify(filterState));
 
 //------------------------------------------Create-------------------------------------
 
@@ -43,7 +53,7 @@ function createdList(data) {
 
   const editBtn = document.createElement('button');
   editBtn.classList.add("listBtn", "editBtn");
-  //editBtn.addEventListener('click', editList);
+  editBtn.addEventListener('click', editList);
 
   const deleteBtn = document.createElement('button');
   deleteBtn.classList.add('listBtn', 'deleteBtn');
@@ -70,7 +80,7 @@ function printAllLists(data) {
 }
 
 // 로드시 실행
-//printAllLists(data);
+printAllLists(data);
 
 //---------------------------------------Delete---------------------------------------
 
@@ -83,12 +93,14 @@ function removeAllAtScreen() {
 
 // remove one list with addEventListener
 function removeOneAtScreen(event) {
-  const target = event.target.parentElement.parentElement
-  // 화면에서 지움
-  target.remove();
-  // 로컬에서 지움
-  listArray.splice(target.id, 1);
-  localStorage.setItem('todo', JSON.stringify(listArray));
+  if (confirm('Are you sure?')) {
+    const target = event.target.parentElement.parentElement
+    // 화면에서 지움
+    target.remove();
+    // 로컬에서 지움
+    listArray.splice(target.id, 1);
+    localStorage.setItem('todo', JSON.stringify(listArray));
+  } 
 }
 
 // reset addEventListener
@@ -101,7 +113,7 @@ function clearLocalStorage() {
 
 // 새로운 투두
 todoInput.addEventListener('keydown', function(el) {
-  // 엔터키를 누르면
+  // press enter
   if (el.keyCode === 13) {
     el.preventDefault();
 
@@ -154,7 +166,7 @@ Date.prototype.format = function() {
 }
 
 //-------------------------------------------------Update-----------------------------------
-// 리스트 수정
+//리스트 수정
 function editList(event) {
   event.preventDefault();
 
@@ -166,6 +178,7 @@ function editList(event) {
   editInput.setAttribute('type', 'text');
   target.children[1].prepend(editInput)
   editInput.value = listArray[target.id].content;
+  // editInput.disabled = false;
   
   // 입력이 안 되는 문제
 
@@ -196,6 +209,7 @@ function changeBtnColor(event) {
   console.dir(target.id)
   if (event.target.classList.contains('not_started')) {
     listArray[target.id].progress = 'in_progress';
+    // 여기 고쳐야함
     localStorage.setItem('todo', listArray);
     event.target.classList.remove('not_started');
     event.target.classList.add('in_progress');
@@ -217,6 +231,38 @@ function changeBtnColor(event) {
 //--------------------------------------------------filter----------------------------------
 
 // 필터(속성별)
+filterNotStarted.addEventListener('click', progressFilter)
+filterInProgress.addEventListener('click', progressFilter)
+filterCompleted.addEventListener('click', progressFilter)
+
+function progressFilter(event) {
+  event.preventDefault();
+
+  let target = event.target
+  if (target.classList.contains('on')) {
+    target.classList.remove('on');
+    target.classList.add('off')
+    // 로컬 저장filterState.notStarted
+    opacityDown(event)
+    // 요기도 손봐야 하고...
+    let filteredArr = listArray.filter(el => el.progress !== 'not_started');
+    let searchId = filteredArr.map(el => el.id);
+    console.log(searchId)
+    allLists.forEach(el => {
+      console.log(el.id);
+      if (searchId.includes(el.id)) {
+        el.style.display = 'none'
+      }
+    })
+    // list id가 같으면 list display none
+    // remove all 을 하면 깔끔하겠지만 display none을 하는 게 더 효과적일 듯?
+  }
+  else {
+    target.classList.remove('off');
+    target.classList.add('on')
+    opacityUp(event);
+  }
+} 
 
 
 // 필터(데이트)
@@ -224,6 +270,11 @@ function changeBtnColor(event) {
 //-----------------------------------------------CSS----------------------------
 
 // opacitiy
-function opacitiyDown(event) {
-  
+function opacityDown(event) {
+  event.target.style.opacity = 0.3;
+  // event.target.style.background = 'rgba(255,113,113, 0.5)';
+}
+
+function opacityUp(event) {
+  event.target.style.opacity = 1;
 }
