@@ -1,7 +1,9 @@
-// filter buttons
-const filterRedBtn = document.querySelector('.not_started');
-const filterYellowBtn = document.querySelector('.in_progress');
-const filterGreenBtn = document.querySelector('.completed');
+/**
+ * 해야할 것 : 
+ * 1. CSS 포지션 고치기
+ * 2. 휴지통 넣기
+ * 3. date 고민하기
+ */
 
 // todo input
 const todoInput = document.querySelector('#todoInput');
@@ -10,11 +12,17 @@ const todoInput = document.querySelector('#todoInput');
 const ul = document.querySelector('ul');
 const allList = document.querySelectorAll('li');
 
+// data & local storage
 var todoData = [];
 if (localStorage.getItem('todo')) {
   todoData = JSON.parse(localStorage.getItem('todo'))
 }
-// localStorage.setItem('todo', JSON.stringify(todoData));
+
+var progressFilterOnOff = {not_started: 'on', in_progress: 'on', completed: 'on'};
+if (localStorage.getItem('progress')) {
+  progressFilterOnOff = JSON.parse(localStorage.getItem('progress'))
+}
+localStorage.setItem('progress', JSON.stringify(progressFilterOnOff));
 
 //--------------------------------------create---------------------------------
 // 실험 해보기
@@ -34,7 +42,7 @@ function createListEl(data) {
   
   const progressBtn = document.createElement('button');
   progressBtn.classList.add('progress_button', `${data.progress}`);
-  progressBtn.addEventListener('click', changeProgressStatus); // not yet
+  progressBtn.addEventListener('click', changeProgressStatus); 
 
   const contentContainer = document.createElement('div');
   contentContainer.classList.add('content_container');
@@ -58,7 +66,7 @@ function createListEl(data) {
 
   const deleteBtn = document.createElement('button');
   deleteBtn.classList.add('listBtn', 'deleteBtn');
-  deleteBtn.addEventListener('click', deleteTodoList); // not yet
+  deleteBtn.addEventListener('click', deleteTodoList); 
 
   // append
   contentContainer.append(todoContent, hr, createdDate);
@@ -79,7 +87,10 @@ function addNewList(event) {
     } 
     else {
       let listObj = {};
-      listObj.id = todoData.length;
+      listObj.id = 0;
+      if (todoData.length) {
+        listObj.id = todoData[todoData.length - 1].id + 1;
+      }
       listObj.todo = todoInput.value;
       listObj.progress = 'not_started';
       listObj.createdAt = new Date().format();
@@ -117,6 +128,7 @@ function changeProgressStatus(event) {
   if (target.classList.contains(`${targetProgressStatus}`)) {
     target.classList.remove(`${targetProgressStatus}`);
     target.classList.add(`${progressType[targetProgressIdx + 1]}`)
+    // id는 인덱스로 작용하면 안 됨! 정확한 id 찾는 작업 필요
     todoData[target.parentElement.id].progress = `${progressType[targetProgressIdx + 1]}`;
     localStorage.setItem('todo', JSON.stringify(todoData));
   }
@@ -130,12 +142,21 @@ function editTodoList(event) {
 //-------------------------------------delete---------------------------------------
 function deleteTodoList(event) {
   event.preventDefault();
-  // list remove;
+  if (confirm('Are you sure?')) {
+    let target = event.target; 
+    let targetLiEl = target.parentElement.parentElement
+    targetLiEl.remove();
+    // 정확한 id값 필요
+    todoData.splice([targetLiEl.id], 1);
+    localStorage.setItem('todo', JSON.stringify(todoData));
+  };
 }
 
 function removeAllAtScreen() {
   allList.forEach(el => el.remove());
 }
+
+// localStorage clear;
 //-----------------------------------Date format--------------------------------------
 Number.prototype.padLeft = function() {
   if (this < 10) {
@@ -158,3 +179,60 @@ Date.prototype.format = function() {
 }
 
 //-----------------------------------filter-------------------------------------
+// filter by progress
+const filterRedBtn = document.querySelector('.not_started');
+const filterYellowBtn = document.querySelector('.in_progress');
+const filterGreenBtn = document.querySelector('.completed');
+
+filterRedBtn.addEventListener('click', filterByProgress);
+filterYellowBtn.addEventListener('click', filterByProgress);
+filterGreenBtn.addEventListener('click', filterByProgress);
+
+function progressFilterDefault() {
+  if (i) {} // code here
+}
+
+progressFilterDefault();
+
+function filterByProgress(event) {
+  event.preventDefault();
+
+  let target = event.target;
+  let progressType = ['not_started', 'in_progress', 'completed'];
+  let targetProgressType = [...target.classList].filter(className => progressType.includes(className))[0];
+
+  let allLists = document.querySelectorAll('li')
+
+  if (progressFilterOnOff[targetProgressType] === 'on') {
+    progressFilterOnOff[targetProgressType] = 'off';
+    localStorage.setItem('progress', JSON.stringify(progressFilterOnOff));
+    let filtered = [...allLists].filter(list => list.children[0].classList.contains(`${targetProgressType}`));
+    filtered.forEach(list => list.style.display = 'none');
+    opacityDown(target);
+  } 
+  else {
+    progressFilterOnOff[targetProgressType] = 'on';
+    localStorage.setItem('progress', JSON.stringify(progressFilterOnOff));
+    let filtered = [...allLists].filter(list => list.children[0].classList.contains(`${targetProgressType}`));
+    filtered.forEach(list => list.style.display = 'flex');
+    opacityUp(target);
+  }
+}
+
+function progressOnState() {
+  // code here
+}
+
+function progressOfState() {
+  // code here
+}
+
+//-----------------------------------------------css----------------------------------------------------
+
+function opacityDown(target) {
+  target.style.opacity = 0.5;
+}
+
+function opacityUp(target) {
+  target.style.opacity = 1;
+}
