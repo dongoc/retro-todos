@@ -8,6 +8,7 @@
 
 const todoInput = document.querySelector('#todoInput');
 const ul = document.querySelector('ul');
+const firstMessege = document.querySelector('#noList');
 
 // data & local storage
 var todoData = [];
@@ -59,7 +60,7 @@ function createListEl(data) {
   const editBtn = createEl('button', 'listBtn', 'editBtn')
   editBtn.addEventListener('click', editTodoList);
 
-  const deleteBtn = createEl('button', 'listBtn', 'deleteBtn')
+  const deleteBtn = createEl('butprintFirstMessegeton', 'listBtn', 'deleteBtn')
   deleteBtn.addEventListener('click', deleteTodoList); 
 
   // append
@@ -94,23 +95,31 @@ function addNewList(event) {
   
       printList(listObj);
       todoInput.value = '';
+      printFirstMessege();
     }
   }
 }
-
 
 //-----------------------------------------read----------------------------------
 function printList(data) {
   ul.append(createListEl(data));
 }
 
-function printAllList(data) {
+function printAllLists(data) {
   removeAllAtScreen(data);
   data.forEach(printList);
 }
 
-printAllList(todoData);
+printAllLists(todoData);
 
+function printFirstMessege() {
+  if (!ul.children.length) {
+    firstMessege.style.display = 'block';
+  } else {
+    firstMessege.style.display = 'none';
+  }
+}
+printFirstMessege();
 //------------------------------------update--------------------------------------
 function changeProgressStatus(event) {
   event.preventDefault()
@@ -125,6 +134,7 @@ function changeProgressStatus(event) {
     let targetList = todoData.filter(list => list.id === Number(target.parentElement.parentElement.id))[0]
     let targetListIdx = todoData.indexOf(targetList);
     targetList.progress = `${progressType[targetProgressIdx + 1]}`;
+    console.dir(targetList);
     todoData.splice(targetListIdx, 1, targetList);
     localStorageSetItem('todo', todoData);
   }
@@ -181,16 +191,20 @@ function deleteTodoList(event) {
     todoData.splice(findLi(target), 1);
     localStorageSetItem('todo', todoData)
     targetLiEl.remove();
+    printFirstMessege()
   };
 }
 
 function removeAllAtScreen() {
   const allList = document.querySelectorAll('li');
   allList.forEach(el => el.remove());
+  printFirstMessege()
 }
 
-const deleteAllBtn = document.querySelector('#deleteAll_img') 
-deleteAllBtn.addEventListener('click', localStorageClear);
+// const deleteAllBtn = document.querySelector('#deleteAll_img') 
+// deleteAllBtn.addEventListener('click', localStorageClear);
+const resetBtn = document.querySelector('#reset');
+resetBtn.addEventListener('click', localStorageClear);
 
 function localStorageClear(event) {
   event.preventDefault();
@@ -198,6 +212,7 @@ function localStorageClear(event) {
     removeAllAtScreen() 
     todoData = [];
     localStorage.clear();
+    printFirstMessege()
   }
 }
 //-----------------------------------Date format--------------------------------------
