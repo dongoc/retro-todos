@@ -1,18 +1,13 @@
 /**
  * 해야할 것 : 
- * 1. CSS 포지션 고치기
- * 2. 휴지통 넣기
  * 3. date 고민하기
  * 4. this
  * 5. 폴님이 주신 영상 보기
+ * 6. 재귀 사용하기
  */
 
-// todo input
 const todoInput = document.querySelector('#todoInput');
-
-// lists
 const ul = document.querySelector('ul');
-const allList = document.querySelectorAll('li');
 
 // data & local storage
 var todoData = [];
@@ -43,8 +38,11 @@ function createListEl(data) {
   const li = document.createElement('li');
   li.id = data.id;
   
+  const progressBtnContainer = createEl('div', 'progressBtn_container')
+
   const progressBtn = createEl('button', 'progress_button', `${data.progress}`)
   progressBtn.addEventListener('click', changeProgressStatus); 
+  progressBtnContainer.append(progressBtn);
 
   const contentContainer = createEl('div', 'content_container')
 
@@ -61,13 +59,13 @@ function createListEl(data) {
   const editBtn = createEl('button', 'listBtn', 'editBtn')
   editBtn.addEventListener('click', editTodoList);
 
-  const deleteBtn = createEl('button', 'listBtn', 'editBdeleteBtntn')
+  const deleteBtn = createEl('button', 'listBtn', 'deleteBtn')
   deleteBtn.addEventListener('click', deleteTodoList); 
 
   // append
   contentContainer.append(todoContent, hr, createdDate);
   editContaitner.append(editBtn, deleteBtn);
-  li.append(progressBtn, contentContainer, editContaitner);
+  li.append(progressBtnContainer, contentContainer, editContaitner);
 
   return li;
 }
@@ -124,7 +122,7 @@ function changeProgressStatus(event) {
   if (target.classList.contains(`${targetProgressStatus}`)) {
     target.classList.remove(`${targetProgressStatus}`);
     target.classList.add(`${progressType[targetProgressIdx + 1]}`)
-    let targetList = todoData.filter(list => list.id === Number(findLi(target)))
+    let targetList = todoData.filter(list => list.id === Number(target.parentElement.id))
     targetList[0].progress = `${progressType[targetProgressIdx + 1]}`;
     localStorageSetItem('todo', todoData);
   }
@@ -167,11 +165,6 @@ function completeEditTodoList(event) {
   todoData.splice(editedListIdx, 1, editedList)
   localStorageSetItem('todo', todoData);
   
-  /**
-   * filter가 안 도는 이유 -> Number가 아니었다....
-   * findLi(event.target)이 안 되는 이유
-   */
-
   // event.target.removeEventListener(completeEditTodoList);
   // event.target.addEventListener('click', editTodoList);
   // opacityDown(event.target);
@@ -190,14 +183,20 @@ function deleteTodoList(event) {
 }
 
 function removeAllAtScreen() {
+  const allList = document.querySelectorAll('li');
   allList.forEach(el => el.remove());
 }
 
+const deleteAllBtn = document.querySelector('#deleteAll_img') 
+deleteAllBtn.addEventListener('click', localStorageClear);
+
 function localStorageClear(event) {
   event.preventDefault();
-  removeAllAtScreen() 
-  todoData = [];
-  localStorage.Clear();
+  if (confirm('All Lists will be deleted.')) {
+    removeAllAtScreen() 
+    todoData = [];
+    localStorage.clear();
+  }
 }
 //-----------------------------------Date format--------------------------------------
 Number.prototype.padLeft = function() {
@@ -285,14 +284,23 @@ function opacityUp(target) {
 }
 
 function displayNone(lists, targetProgressType) {
-  let filtered = [...lists].filter(list => list.children[0].classList.contains(`${targetProgressType}`));
+  let filtered = [...lists].filter(list => list.children[0].children[0].classList.contains(`${targetProgressType}`));
   filtered.forEach(list => list.style.display = 'none');
 }
 
 function displayFlex(lists, targetProgressType) {
-  let filtered = [...lists].filter(list => list.children[0].classList.contains(`${targetProgressType}`));
+  let filtered = [...lists].filter(list => list.children[0].children[0].classList.contains(`${targetProgressType}`));
   filtered.forEach(list => list.style.display = 'flex');
 }
+
+deleteAllBtn.addEventListener('mouseover', function(event) {
+  event.preventDefault;
+  deleteAllBtn.setAttribute('src', "image/trashopened.png")
+})
+deleteAllBtn.addEventListener('mouseout', function(event) {
+  event.preventDefault;
+  deleteAllBtn.setAttribute('src', "image/trashclosed.png")
+})
 //------------------------------------local storage-------------------------------------------------
 function localStorageSetItem(key, item) {
   localStorage.setItem(key, JSON.stringify(item));
