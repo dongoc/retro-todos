@@ -3,6 +3,8 @@
  * 1. CSS 포지션 고치기
  * 2. 휴지통 넣기
  * 3. date 고민하기
+ * 4. this
+ * 5. 폴님이 주신 영상 보기
  */
 
 // todo input
@@ -22,15 +24,16 @@ var progressFilterOnOff = {not_started: 'on', in_progress: 'on', completed: 'on'
 if (localStorage.getItem('progress')) {
   progressFilterOnOff = JSON.parse(localStorage.getItem('progress'))
 }
-localStorage.setItem('progress', JSON.stringify(progressFilterOnOff));
+localStorageSetItem('progress', progressFilterOnOff);
 
 //--------------------------------------create---------------------------------
-// 실험 해보기
 function createEl(tagName, className) {
-  let el = document.createElement(`${tagName}`);
+  let el = document.createElement(tagName);
   let classList = [...arguments].slice(1);
-  for (let i of classList) {
-    el.classList.add(`${i}`);
+  if (classList.length) {
+    for (let i of classList) {
+      el.classList.add(`${i}`);
+    }
   }
   return el;
 }
@@ -40,32 +43,25 @@ function createListEl(data) {
   const li = document.createElement('li');
   li.id = data.id;
   
-  const progressBtn = document.createElement('button');
-  progressBtn.classList.add('progress_button', `${data.progress}`);
+  const progressBtn = createEl('button', 'progress_button', `${data.progress}`)
   progressBtn.addEventListener('click', changeProgressStatus); 
 
-  const contentContainer = document.createElement('div');
-  contentContainer.classList.add('content_container');
+  const contentContainer = createEl('div', 'content_container')
 
-  const todoContent = document.createElement('div');
-  todoContent.classList.add('todos');
+  const todoContent = createEl('div', 'todos')
   todoContent.textContent = data.todo;
 
   const hr = document.createElement('hr');
 
-  const createdDate = document.createElement('div');
-  createdDate.classList.add('createdDate');
+  const createdDate = createEl('div', 'createdDate')
   createdDate.textContent = data.createdAt;
 
-  const editContaitner = document.createElement('div');
-  editContaitner.classList.add('edit_container');
+  const editContaitner = createEl('div', 'edit_container')
 
-  const editBtn = document.createElement('button');
-  editBtn.classList.add('listBtn', 'editBtn');
-  editBtn.addEventListener('click', editTodoList); // not yet
+  const editBtn = createEl('button', 'listBtn', 'editBtn')
+  editBtn.addEventListener('click', editTodoList);
 
-  const deleteBtn = document.createElement('button');
-  deleteBtn.classList.add('listBtn', 'deleteBtn');
+  const deleteBtn = createEl('button', 'listBtn', 'editBdeleteBtntn')
   deleteBtn.addEventListener('click', deleteTodoList); 
 
   // append
@@ -96,7 +92,7 @@ function addNewList(event) {
       listObj.createdAt = new Date().format();
   
       todoData.push(listObj);
-      localStorage.setItem('todo', JSON.stringify(todoData));
+      localStorageSetItem('todo', todoData);
   
       printList(listObj);
       todoInput.value = '';
@@ -128,27 +124,68 @@ function changeProgressStatus(event) {
   if (target.classList.contains(`${targetProgressStatus}`)) {
     target.classList.remove(`${targetProgressStatus}`);
     target.classList.add(`${progressType[targetProgressIdx + 1]}`)
-    // id는 인덱스로 작용하면 안 됨! 정확한 id 찾는 작업 필요
-    todoData[target.parentElement.id].progress = `${progressType[targetProgressIdx + 1]}`;
-    localStorage.setItem('todo', JSON.stringify(todoData));
+    let targetList = todoData.filter(list => list.id === Number(findLi(target)))
+    targetList[0].progress = `${progressType[targetProgressIdx + 1]}`;
+    localStorageSetItem('todo', todoData);
   }
 }
 
 function editTodoList(event) {
   event.preventDefault();
-  // todo content -> display none
-  // edit input
+  // opacityUp(event.target);
+  // event.target.removeEventListener(editTodoList);
+  // event.target.addEventListener('click', completeEditTodoList);
+
+  let target = event.target.parentElement.parentElement.children[1].children[0];
+  target.style.display = 'none';
+
+  const editInput = document.createElement('input');
+  editInput.setAttribute('type', 'text');
+  editInput.classList.add('edit_input')
+  target.after(editInput);
+  editInput.value = target.textContent;
+  editInput.addEventListener('keydown', isEnterKey);
 }
+
+function isEnterKey(event) {
+  if (event.keyCode === 13) {
+    completeEditTodoList(event);
+  }
+}
+
+function completeEditTodoList(event) {
+  event.preventDefault();
+  event.target.style.display = 'none';
+  let target = event.target.parentElement.parentElement.children[1].children[0];
+  target.style.display = 'block';
+  target.textContent = event.target.value;
+
+  // [리팩토링]
+  let editedList = todoData.filter(list => list.id === Number(event.target.parentElement.parentElement.id))[0]
+  let editedListIdx = todoData.indexOf(editedList);
+  editedList.todo = target.textContent;
+  todoData.splice(editedListIdx, 1, editedList)
+  localStorageSetItem('todo', todoData);
+  
+  /**
+   * filter가 안 도는 이유 -> Number가 아니었다....
+   * findLi(event.target)이 안 되는 이유
+   */
+
+  // event.target.removeEventListener(completeEditTodoList);
+  // event.target.addEventListener('click', editTodoList);
+  // opacityDown(event.target);
+} 
 //-------------------------------------delete---------------------------------------
 function deleteTodoList(event) {
   event.preventDefault();
   if (confirm('Are you sure?')) {
     let target = event.target; 
+    // find li element
     let targetLiEl = target.parentElement.parentElement
+    todoData.splice(findLi(target), 1);
+    localStorageSetItem('todo', todoData)
     targetLiEl.remove();
-    // 정확한 id값 필요
-    todoData.splice([targetLiEl.id], 1);
-    localStorage.setItem('todo', JSON.stringify(todoData));
   };
 }
 
@@ -156,7 +193,12 @@ function removeAllAtScreen() {
   allList.forEach(el => el.remove());
 }
 
-// localStorage clear;
+function localStorageClear(event) {
+  event.preventDefault();
+  removeAllAtScreen() 
+  todoData = [];
+  localStorage.Clear();
+}
 //-----------------------------------Date format--------------------------------------
 Number.prototype.padLeft = function() {
   if (this < 10) {
@@ -184,12 +226,29 @@ const filterRedBtn = document.querySelector('.not_started');
 const filterYellowBtn = document.querySelector('.in_progress');
 const filterGreenBtn = document.querySelector('.completed');
 
+const progressFilterButtons = [filterRedBtn, filterYellowBtn, filterGreenBtn];
+
 filterRedBtn.addEventListener('click', filterByProgress);
 filterYellowBtn.addEventListener('click', filterByProgress);
 filterGreenBtn.addEventListener('click', filterByProgress);
 
 function progressFilterDefault() {
-  if (i) {} // code here
+  let allLists = document.querySelectorAll('li');
+  let progressType = ['not_started', 'in_progress', 'completed'];
+
+  progressType.forEach(function(type) {
+    if (progressFilterOnOff[type] === 'on') {
+      displayFlex(allLists, type)
+    } 
+    else {
+      displayNone(allLists, type)
+      let offBtn = progressFilterButtons.filter(function(el) {
+        let type = [...el.classList].filter(className => progressType.includes(className));
+        return progressFilterOnOff[type] === 'off';
+      })
+      offBtn.forEach(el => changeClassName(el, 'on', 'off'))
+    }
+  })
 }
 
 progressFilterDefault();
@@ -205,30 +264,18 @@ function filterByProgress(event) {
 
   if (progressFilterOnOff[targetProgressType] === 'on') {
     progressFilterOnOff[targetProgressType] = 'off';
-    localStorage.setItem('progress', JSON.stringify(progressFilterOnOff));
-    let filtered = [...allLists].filter(list => list.children[0].classList.contains(`${targetProgressType}`));
-    filtered.forEach(list => list.style.display = 'none');
-    opacityDown(target);
+    changeClassName(target, 'on', 'off')
+    localStorageSetItem('progress', progressFilterOnOff);
+    displayNone(allLists, targetProgressType);
   } 
   else {
     progressFilterOnOff[targetProgressType] = 'on';
-    localStorage.setItem('progress', JSON.stringify(progressFilterOnOff));
-    let filtered = [...allLists].filter(list => list.children[0].classList.contains(`${targetProgressType}`));
-    filtered.forEach(list => list.style.display = 'flex');
-    opacityUp(target);
+    changeClassName(target, 'off', 'on')
+    localStorageSetItem('progress', progressFilterOnOff)
+    displayFlex(allLists, targetProgressType);
   }
 }
-
-function progressOnState() {
-  // code here
-}
-
-function progressOfState() {
-  // code here
-}
-
 //-----------------------------------------------css----------------------------------------------------
-
 function opacityDown(target) {
   target.style.opacity = 0.5;
 }
@@ -236,3 +283,44 @@ function opacityDown(target) {
 function opacityUp(target) {
   target.style.opacity = 1;
 }
+
+function displayNone(lists, targetProgressType) {
+  let filtered = [...lists].filter(list => list.children[0].classList.contains(`${targetProgressType}`));
+  filtered.forEach(list => list.style.display = 'none');
+}
+
+function displayFlex(lists, targetProgressType) {
+  let filtered = [...lists].filter(list => list.children[0].classList.contains(`${targetProgressType}`));
+  filtered.forEach(list => list.style.display = 'flex');
+}
+//------------------------------------local storage-------------------------------------------------
+function localStorageSetItem(key, item) {
+  localStorage.setItem(key, JSON.stringify(item));
+}
+
+//-----------------------------------------------else-------------------------------------------------------
+function findLi(target) {
+  let allLists = [...document.querySelectorAll('li')];
+  if (target.parentElement === ul) {
+    return undefined;
+  }
+  if (allLists.includes(target.parentElement)) {
+    return target.parentElement.id;
+  } else {
+    findLi(target.parentElement);
+  }
+}
+
+function changeClassName(element, before, after) {
+  element.classList.remove(before);
+  element.classList.add(after);
+}
+
+/* [paul] find the li el
+ removeFromList(text) {
+    let list = document.querySelector(‘ul’);
+    let childs = Array.from(list.childNodes);
+    let removable = child.find((i) => i.innerText === text);
+    return item;
+  }
+*/
