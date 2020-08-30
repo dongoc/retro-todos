@@ -1,6 +1,5 @@
 /**
  * 해야할 것 : 
- * 3. date 고민하기
  * 4. this
  * 5. 폴님이 주신 영상 보기
  * 6. 재귀 사용하기
@@ -310,14 +309,16 @@ function displayGrid(lists, targetProgressType) {
   filtered.forEach(list => list.style.display = 'grid');
 }
 
+/*
 deleteAllBtn.addEventListener('mouseover', function(event) {
-  event.preventDefault;
+  event.preventDefault();
   deleteAllBtn.setAttribute('src', "image/trashopened.png")
 })
 deleteAllBtn.addEventListener('mouseout', function(event) {
-  event.preventDefault;
+  event.preventDefault();
   deleteAllBtn.setAttribute('src', "image/trashclosed.png")
 })
+*/
 //------------------------------------local storage-------------------------------------------------
 function localStorageSetItem(key, item) {
   localStorage.setItem(key, JSON.stringify(item));
