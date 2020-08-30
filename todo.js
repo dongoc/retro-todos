@@ -120,9 +120,10 @@ function changeProgressStatus(event) {
   let targetProgressIdx = progressType.indexOf(targetProgressStatus);
 
   if (target.classList.contains(`${targetProgressStatus}`)) {
-    target.classList.remove(`${targetProgressStatus}`);
-    target.classList.add(`${progressType[targetProgressIdx + 1]}`)
-    let targetList = todoData.filter(list => list.id === Number(target.parentElement.id))
+    changeClassName(target, `${targetProgressStatus}`, `${progressType[targetProgressIdx + 1]}`)
+
+    let targetList = todoData.filter(list => list.id === Number(target.parentElement.parentElement.id))
+    let targetListIdx = todoData.indexOf(targetList);
     targetList[0].progress = `${progressType[targetProgressIdx + 1]}`;
     localStorageSetItem('todo', todoData);
   }
@@ -237,7 +238,7 @@ function progressFilterDefault() {
 
   progressType.forEach(function(type) {
     if (progressFilterOnOff[type] === 'on') {
-      displayFlex(allLists, type)
+      displayGrid(allLists, type)
     } 
     else {
       displayNone(allLists, type)
@@ -271,7 +272,7 @@ function filterByProgress(event) {
     progressFilterOnOff[targetProgressType] = 'on';
     changeClassName(target, 'off', 'on')
     localStorageSetItem('progress', progressFilterOnOff)
-    displayFlex(allLists, targetProgressType);
+    displayGrid(allLists, targetProgressType);
   }
 }
 //-----------------------------------------------css----------------------------------------------------
@@ -288,9 +289,9 @@ function displayNone(lists, targetProgressType) {
   filtered.forEach(list => list.style.display = 'none');
 }
 
-function displayFlex(lists, targetProgressType) {
+function displayGrid(lists, targetProgressType) {
   let filtered = [...lists].filter(list => list.children[0].children[0].classList.contains(`${targetProgressType}`));
-  filtered.forEach(list => list.style.display = 'flex');
+  filtered.forEach(list => list.style.display = 'grid');
 }
 
 deleteAllBtn.addEventListener('mouseover', function(event) {
