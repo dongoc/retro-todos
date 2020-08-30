@@ -1,12 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
-
+/*@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');*/
+@font-face {
+  font-family: 'S-CoreDream-3Light';
+  src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_six@1.2/S-CoreDream-3Light.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
 * {
   box-sizing: border-box;
 }
 
 body {
   background-color: #F7CBB2;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'S-CoreDream-3Light';
   display: flex;
   align-items: center;
   justify-content: center;
@@ -32,12 +37,15 @@ header {
 }
 
 .title_container {
-  display: flex;
   margin-bottom: 20px;
-  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr
 }
 
-
+.botton_container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr)
+}
 
 .filterbtn {
   width: 30px;
@@ -78,15 +86,14 @@ header {
 }
 
 h1 {
-  font-family: 'Roboto';
+  font-family: 'S-CoreDream-3Light';
   font-style: normal;
   font-weight: bold;
   font-size: 20px;
   line-height: 35px;
   letter-spacing: 2px;
   margin: 0;
-  position: absolute;
-  left: 38%;
+  text-align: center;
 }
 
 .input_container {
@@ -101,7 +108,7 @@ input {
   border-radius: 10px;
   padding: 10px 20px;
   outline: none;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'S-CoreDream-3Light';
   font-size: 15px;
 }
 input::-webkit-input-placeholder {
@@ -110,8 +117,8 @@ input::-webkit-input-placeholder {
 
 /*list*/
 .list_container {
-  padding: 20px 60px;
-  height: 573px;
+  padding: 20px 50px;
+  height: 568px;
   overflow: scroll;
 }
 .list_container::-webkit-scrollbar {
@@ -134,12 +141,17 @@ ul {
   list-style:none;
   padding: 0;
 }
-
 li {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 5fr 1.5fr;
+  gap: 20px;
   align-items: center;
   margin: 20px 0px 30px 0px;
+}
+
+.progressBtn_container {
+  display: flex;
+  justify-content: center;
 }
 
 .progress_button {
@@ -159,15 +171,19 @@ li {
 }
 
 .content_container {
-  width: 230px;
+  width: 100%;
+  display: grid;
 }
 
 .todos {
   width: 100%;
   font-size: 20px;
   letter-spacing: 1.5px;
-  overflow: hidden;
+  overflow: auto;
   padding: 3px 0px;
+}
+.todos::-webkit-scrollbar {
+  display: none;
 }
 
 .createdDate {
@@ -193,6 +209,10 @@ hr {
   border: 1px dashed #000000;
 }
 
+.edit_container {
+  display: flex;
+  justify-content: space-between;
+}
 .listBtn {
   background-color: none;
   outline: none;
@@ -238,7 +258,7 @@ hr {
   justify-content: space-evenly;
   padding: 5px 10px;
   font-size: 15px;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'S-CoreDream-3Light';
   position: absolute;
   top: -60px;
   right: 0px;
@@ -268,3 +288,13 @@ hr {
   left: -130px;
   cursor: pointer;
 }
+
+#deleteAll_img {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  top: 120px;
+  left: -115px;
+  cursor: pointer;
+}
+
