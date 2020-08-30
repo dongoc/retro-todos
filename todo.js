@@ -122,9 +122,10 @@ function changeProgressStatus(event) {
   if (target.classList.contains(`${targetProgressStatus}`)) {
     changeClassName(target, `${targetProgressStatus}`, `${progressType[targetProgressIdx + 1]}`)
 
-    let targetList = todoData.filter(list => list.id === Number(target.parentElement.parentElement.id))
+    let targetList = todoData.filter(list => list.id === Number(target.parentElement.parentElement.id))[0]
     let targetListIdx = todoData.indexOf(targetList);
-    targetList[0].progress = `${progressType[targetProgressIdx + 1]}`;
+    targetList.progress = `${progressType[targetProgressIdx + 1]}`;
+    todoData.splice(targetListIdx, 1, targetList);
     localStorageSetItem('todo', todoData);
   }
 }
